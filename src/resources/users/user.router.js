@@ -12,6 +12,23 @@ router.route('/').get(async (req, res) => {
   }
 });
 
+// Create User
+router.route('/').post(async (req, res) => {
+  try {
+    const user = await usersService.createUser(req.body);
+
+    // if (!user) {
+    //   res
+    //     .status(400)
+    //     .json({ success: false, result: 'User has already exist.' });
+    // } else {
+    res.status(200).json(user);
+    // }
+  } catch (err) {
+    res.status(500).json({ success: false, err });
+  }
+});
+
 // Get User by Id
 router.route('/:userId').get(async (req, res) => {
   try {
@@ -21,25 +38,6 @@ router.route('/:userId').get(async (req, res) => {
 
     if (!user) {
       res.status(404).json({ success: false, result: 'User not found.' });
-    } else {
-      res.status(200).json(user);
-    }
-  } catch (err) {
-    res.status(500).json({ success: false, err });
-  }
-});
-
-// Create User
-router.route('/').post(async (req, res) => {
-  try {
-    const { name, login, password } = req.body;
-
-    const user = await usersService.createUser({ name, login, password });
-
-    if (!user) {
-      res
-        .status(400)
-        .json({ success: false, result: 'User has already exist.' });
     } else {
       res.status(200).json(user);
     }

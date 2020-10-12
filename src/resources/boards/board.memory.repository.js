@@ -49,6 +49,7 @@ const removeBoard = id => {
   }
 
   db.boards = boards;
+  delete db.tasks[id];
 
   return targetBoard;
 };

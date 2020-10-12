@@ -50,6 +50,14 @@ const removeUser = id => {
 
   db.users = users;
 
+  Object.values(db.tasks).forEach(boardTasks => {
+    for (const task in boardTasks) {
+      if (task.userId === id) {
+        task.userId = null;
+      }
+    }
+  });
+
   return User.toResponse(targetUser);
 };
 
