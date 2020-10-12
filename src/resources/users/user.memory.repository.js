@@ -6,11 +6,11 @@ const getAll = () => Object.values(db.users).map(User.toResponse);
 const getById = userId => {
   const user = db.users[userId];
 
-  if (user) {
-    return User.toResponse(user);
+  if (!user) {
+    return null;
   }
 
-  return null;
+  return User.toResponse(user);
 };
 
 const createUser = user => {

@@ -63,11 +63,7 @@ router.route('/:userId').put(async (req, res) => {
     if (!user) {
       res.status(400).json({ success: false, result: 'User not found.' });
     } else {
-      res.status(200).json({
-        success: true,
-        result: 'The user has been updated.',
-        id: userId
-      });
+      res.status(200).json(user);
     }
   } catch (err) {
     res.status(500).json({ success: false, err });
@@ -84,11 +80,7 @@ router.route('/:userId').delete(async (req, res) => {
     if (!user) {
       res.status(404).json({ success: false, result: 'User not found.' });
     } else {
-      res.status(204).json({
-        success: true,
-        result: 'The user has been deleted.',
-        id: userId
-      });
+      res.status(204).json(user);
     }
   } catch (err) {
     res.status(500).json({ success: false, err });
