@@ -17,13 +17,7 @@ router.route('/').post(async (req, res) => {
   try {
     const user = await usersService.createUser(req.body);
 
-    // if (!user) {
-    //   res
-    //     .status(400)
-    //     .json({ success: false, result: 'User has already exist.' });
-    // } else {
     res.status(200).json(user);
-    // }
   } catch (err) {
     res.status(500).json({ success: false, err });
   }
@@ -36,11 +30,7 @@ router.route('/:userId').get(async (req, res) => {
 
     const user = await usersService.getById(userId);
 
-    if (!user) {
-      res.status(404).json({ success: false, result: 'User not found.' });
-    } else {
-      res.status(200).json(user);
-    }
+    res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ success: false, err });
   }
@@ -58,11 +48,7 @@ router.route('/:userId').put(async (req, res) => {
       password
     });
 
-    if (!user) {
-      res.status(400).json({ success: false, result: 'User not found.' });
-    } else {
-      res.status(200).json(user);
-    }
+    res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ success: false, err });
   }
@@ -75,11 +61,7 @@ router.route('/:userId').delete(async (req, res) => {
 
     const user = await usersService.removeUser(userId);
 
-    if (!user) {
-      res.status(404).json({ success: false, result: 'User not found.' });
-    } else {
-      res.status(204).json(user);
-    }
+    res.status(204).json(user);
   } catch (err) {
     res.status(500).json({ success: false, err });
   }

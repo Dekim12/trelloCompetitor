@@ -17,18 +17,11 @@ router.route('/').get(async (req, res) => {
 // Create Task
 router.route('/').post(async (req, res) => {
   try {
-    // const { title, order, description, userId, boardId, columnId } = req.body;
     const { boardId } = req.params;
 
     const task = await tasksService.createTask(boardId, req.body);
 
-    if (!task) {
-      res
-        .status(400)
-        .json({ success: false, result: 'Task has already exist.' });
-    } else {
-      res.status(200).json(task);
-    }
+    res.status(200).json(task);
   } catch (err) {
     res.status(500).json({ success: false, err });
   }
@@ -58,11 +51,7 @@ router.route('/:taskId').put(async (req, res) => {
 
     const task = await tasksService.updateTask(boardId, taskId, req.body);
 
-    if (!task) {
-      res.status(400).json({ success: false, result: 'Task not found.' });
-    } else {
-      res.status(200).json(task);
-    }
+    res.status(200).json(task);
   } catch (err) {
     res.status(500).json({ success: false, err });
   }
@@ -76,7 +65,7 @@ router.route('/:taskId').delete(async (req, res) => {
     const task = await tasksService.removeTask(boardId, taskId);
 
     if (!task) {
-      res.status(404).json({ success: false, result: 'User not found.' });
+      res.status(404).json({});
     } else {
       res.status(204).json(task);
     }

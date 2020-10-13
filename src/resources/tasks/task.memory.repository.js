@@ -15,15 +15,9 @@ const createTask = (boardId, task) => {
     boardTasks = db.tasks[boardId];
   }
 
-  const targetTask = Object.values(boardTasks).find(
-    item => item.title === task.title
-  );
+  Object.values(boardTasks).find(item => item.title === task.title);
 
-  if (targetTask) {
-    return null;
-  }
-
-  const newTask = new Task(task);
+  const newTask = new Task({ ...task, boardId });
   boardTasks[newTask.id] = newTask;
 
   return newTask;
@@ -43,10 +37,6 @@ const getById = (boardId, taskId) => {
 const updateTask = (boardId, taskId, task) => {
   const boardTasks = db.tasks[boardId] || {};
   const targetTask = boardTasks[taskId];
-
-  if (!targetTask) {
-    return null;
-  }
 
   const updatedTask = new Task({ ...targetTask, ...task });
   db.tasks[boardId] = { ...db.tasks[boardId], [taskId]: updatedTask };

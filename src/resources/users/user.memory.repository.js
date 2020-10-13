@@ -6,21 +6,11 @@ const getAll = () => Object.values(db.users).map(User.toResponse);
 const getById = userId => {
   const user = db.users[userId];
 
-  if (!user) {
-    return null;
-  }
-
   return User.toResponse(user);
 };
 
 const createUser = user => {
-  const targetUser = Object.values(db.users).find(
-    item => item.name === user.name
-  );
-
-  if (targetUser) {
-    return null;
-  }
+  Object.values(db.users).find(item => item.name === user.name);
 
   const newUser = new User(user);
   db.users[newUser.id] = newUser;
@@ -31,10 +21,6 @@ const createUser = user => {
 const updateUser = (id, user) => {
   const targetUser = db.users[id];
 
-  if (!targetUser) {
-    return null;
-  }
-
   const updatedUser = new User({ ...targetUser, ...user });
   db.users = { ...db.users, [id]: updatedUser };
 
@@ -44,18 +30,14 @@ const updateUser = (id, user) => {
 const removeUser = id => {
   const { [id]: targetUser, ...users } = db.users;
 
-  if (!targetUser) {
-    return null;
-  }
-
   db.users = users;
 
-  Object.values(db.tasks).forEach(boardTasks => {
-    for (const task in boardTasks) {
-      if (task.userId === id) {
-        task.userId = null;
+  Object.keys(db.tasks).forEach(boardId => {
+    Object.keys(db.tasks[boardId]).forEach(taskId => {
+      if (db.tasks[boardId][taskId].userId === id) {
+        db.tasks[boardId][taskId].userId = null;
       }
-    }
+    });
   });
 
   return User.toResponse(targetUser);

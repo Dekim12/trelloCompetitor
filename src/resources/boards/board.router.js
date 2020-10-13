@@ -19,13 +19,7 @@ router.route('/').post(async (req, res) => {
 
     const board = await boardsService.createBoard({ title, columns });
 
-    if (!board) {
-      res
-        .status(400)
-        .json({ success: false, result: 'Board has already exist.' });
-    } else {
-      res.status(200).json(board);
-    }
+    res.status(200).json(board);
   } catch (err) {
     res.status(500).json({ success: false, err });
   }
@@ -37,9 +31,8 @@ router.route('/:boardId').get(async (req, res) => {
     const { boardId } = req.params;
 
     const board = await boardsService.getById(boardId);
-
     if (!board) {
-      res.status(404).json({ success: false, result: 'Board not found.' });
+      res.status(404).json({ success: false, result: 'Task not found.' });
     } else {
       res.status(200).json(board);
     }
@@ -59,11 +52,7 @@ router.route('/:boardId').put(async (req, res) => {
       columns
     });
 
-    if (!board) {
-      res.status(400).json({ success: false, result: 'Board not found.' });
-    } else {
-      res.status(200).json(board);
-    }
+    res.status(200).json(board);
   } catch (err) {
     res.status(500).json({ success: false, err });
   }

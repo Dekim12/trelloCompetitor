@@ -4,13 +4,7 @@ const db = require('../../db');
 const getAll = () => Object.values(db.boards);
 
 const createBoard = board => {
-  const targetBoard = Object.values(db.boards).find(
-    item => item.title === board.title
-  );
-
-  if (targetBoard) {
-    return null;
-  }
+  Object.values(db.boards).find(item => item.title === board.title);
 
   const newBoard = new Board(board);
   db.boards[newBoard.id] = newBoard;
@@ -30,10 +24,6 @@ const getById = boardId => {
 
 const updateBoard = (id, board) => {
   const targetBoard = db.boards[id];
-
-  if (!targetBoard) {
-    return null;
-  }
 
   const updatedBoard = new Board({ ...targetBoard, ...board });
   db.boards = { ...db.boards, [id]: updatedBoard };
