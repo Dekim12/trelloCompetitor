@@ -2,29 +2,29 @@ const router = require('express').Router();
 const usersService = require('./user.service');
 
 // Get all Users
-router.route('/').get(async (req, res) => {
+router.route('/').get(async (req, res, next) => {
   try {
     const users = await usersService.getAll();
 
     res.status(200).json(users);
   } catch (err) {
-    res.status(500).json({ success: false, err });
+    return next(err);
   }
 });
 
 // Create User
-router.route('/').post(async (req, res) => {
+router.route('/').post(async (req, res, next) => {
   try {
     const user = await usersService.createUser(req.body);
 
     res.status(200).json(user);
   } catch (err) {
-    res.status(500).json({ success: false, err });
+    return next(err);
   }
 });
 
 // Get User by Id
-router.route('/:userId').get(async (req, res) => {
+router.route('/:userId').get(async (req, res, next) => {
   try {
     const { userId } = req.params;
 
@@ -32,12 +32,12 @@ router.route('/:userId').get(async (req, res) => {
 
     res.status(200).json(user);
   } catch (err) {
-    res.status(500).json({ success: false, err });
+    return next(err);
   }
 });
 
 // Update User
-router.route('/:userId').put(async (req, res) => {
+router.route('/:userId').put(async (req, res, next) => {
   try {
     const { name, login, password } = req.body;
     const { userId } = req.params;
@@ -50,12 +50,12 @@ router.route('/:userId').put(async (req, res) => {
 
     res.status(200).json(user);
   } catch (err) {
-    res.status(500).json({ success: false, err });
+    return next(err);
   }
 });
 
 // Remove User
-router.route('/:userId').delete(async (req, res) => {
+router.route('/:userId').delete(async (req, res, next) => {
   try {
     const { userId } = req.params;
 
@@ -63,7 +63,7 @@ router.route('/:userId').delete(async (req, res) => {
 
     res.status(204).json(user);
   } catch (err) {
-    res.status(500).json({ success: false, err });
+    return next(err);
   }
 });
 
