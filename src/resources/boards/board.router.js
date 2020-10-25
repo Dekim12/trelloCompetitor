@@ -6,7 +6,9 @@ router.route('/').get(async (req, res, next) => {
   try {
     const boards = await boardsService.getAll();
 
-    res.status(200).json(boards);
+    const boardsToResponse = boards.map(user => user.toResponse());
+
+    res.status(200).json(boardsToResponse);
   } catch (err) {
     return next(err);
   }
@@ -19,7 +21,7 @@ router.route('/').post(async (req, res, next) => {
 
     const board = await boardsService.createBoard({ title, columns });
 
-    res.status(200).json(board);
+    res.status(200).json(board.toResponse());
   } catch (err) {
     return next(err);
   }
@@ -31,10 +33,12 @@ router.route('/:boardId').get(async (req, res, next) => {
     const { boardId } = req.params;
 
     const board = await boardsService.getById(boardId);
+
     if (!board) {
       return next({ statusCode: 404, result: 'Board not found.' });
     }
-    res.status(200).json(board);
+
+    res.status(200).json(board.toResponse());
   } catch (err) {
     return next(err);
   }
@@ -46,12 +50,18 @@ router.route('/:boardId').put(async (req, res, next) => {
     const { title, columns } = req.body;
     const { boardId } = req.params;
 
-    const board = await boardsService.updateBoard(boardId, {
+    console.log('----------', columns);
+
+    const updateRes = await boardsService.updateBoard(boardId, {
       title,
       columns
     });
 
-    res.status(200).json(board);
+    if (!updateRes.n) {
+      return next({ statusCode: 404, result: 'Board not found.' });
+    }
+
+    res.status(200).json({ id: boardId, title, columns });
   } catch (err) {
     return next(err);
   }
@@ -62,12 +72,12 @@ router.route('/:boardId').delete(async (req, res, next) => {
   try {
     const { boardId } = req.params;
 
-    const board = await boardsService.removeBoard(boardId);
+    const removeRes = await boardsService.removeBoard(boardId);
 
-    if (!board) {
+    if (!removeRes.deletedCount) {
       return next({ statusCode: 404, result: 'Board not found.' });
     }
-    res.status(204).json(board);
+    res.status(204).json(boardId);
   } catch (err) {
     return next(err);
   }

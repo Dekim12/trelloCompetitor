@@ -9,15 +9,21 @@ const configureMorgan = () => {
 };
 
 const enableLogger = app => {
-  process.on('uncaughtException', err => {
-    console.error('\nUncaught Exception: ', err, '\n');
+  process
+    .on('uncaughtException', err => {
+      console.error('\nUncaught Exception: ', err, '\n');
 
-    process.exit(1);
-  });
-
-  process.on('unhandledRejection', (reason, promise) =>
-    console.error('\nUnhandled Rejection at:', promise, 'reason:', reason, '\n')
-  );
+      process.exit(1);
+    })
+    .on('unhandledRejection', (reason, promise) =>
+      console.error(
+        '\nUnhandled Rejection at:',
+        promise,
+        'reason:',
+        reason,
+        '\n'
+      )
+    );
 
   configureMorgan();
   app.use(morgan('\n:method :url :status - :response-time ms :query :body\n'));
