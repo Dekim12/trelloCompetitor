@@ -1,5 +1,8 @@
 const router = require('express').Router();
 const usersService = require('./user.service');
+const { Error404 } = require('../../common/errors');
+
+const ERROR_RESULT = 'User not found.';
 
 // Get all Users
 router.route('/').get(async (req, res, next) => {
@@ -33,7 +36,7 @@ router.route('/:userId').get(async (req, res, next) => {
     const user = await usersService.getById(userId);
 
     if (!user) {
-      return next({ statusCode: 404, result: 'User not found.' });
+      return next(new Error404(ERROR_RESULT));
     }
 
     res.status(200).json(user.toResponse());
@@ -55,7 +58,7 @@ router.route('/:userId').put(async (req, res, next) => {
     });
 
     if (!updateRes.n) {
-      return next({ statusCode: 404, result: 'User not found.' });
+      return next(new Error404(ERROR_RESULT));
     }
 
     res.status(200).json({ id: userId, name, login });
@@ -69,10 +72,10 @@ router.route('/:userId').delete(async (req, res, next) => {
   try {
     const { userId } = req.params;
 
-    const removeRes = await usersService.removeUser(userId);
+    const deletedCount = await usersService.removeUser(userId);
 
-    if (!removeRes.deletedCount) {
-      return next({ statusCode: 404, result: 'User not found.' });
+    if (!deletedCount) {
+      return next(new Error404(ERROR_RESULT));
     }
 
     res.status(204).json(userId);

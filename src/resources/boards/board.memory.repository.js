@@ -1,4 +1,5 @@
 const Board = require('./board.model');
+const { removeBoardTasks } = require('../tasks/task.memory.repository');
 
 const getAll = async () => Board.find();
 
@@ -18,6 +19,14 @@ const updateBoard = async (_id, { title, columns }) => {
   return Board.updateOne({ _id }, { title, columns: transformedColumns });
 };
 
-const removeBoard = async _id => Board.remove({ _id });
+const removeBoard = async _id => {
+  const { deletedCount } = await Board.remove({ _id });
+
+  if (deletedCount) {
+    await removeBoardTasks(_id);
+  }
+
+  return deletedCount;
+};
 
 module.exports = { getAll, createBoard, getById, updateBoard, removeBoard };

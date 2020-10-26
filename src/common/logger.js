@@ -5,7 +5,17 @@ const morgan = require('morgan');
 
 const configureMorgan = () => {
   morgan.token('query', req => `\nquery params: ${JSON.stringify(req.query)}`);
-  morgan.token('body', req => `\nbody: ${JSON.stringify(req.body)}`);
+  morgan.token('body', req => {
+    const { password, ...body } = req.body;
+
+    const token = { ...body };
+
+    if (password) {
+      token.password = '*****';
+    }
+
+    return `\nbody: ${JSON.stringify(token)}`;
+  });
 };
 
 const enableLogger = app => {

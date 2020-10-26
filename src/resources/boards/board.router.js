@@ -1,5 +1,8 @@
 const router = require('express').Router();
 const boardsService = require('./board.service');
+const { Error404 } = require('../../common/errors');
+
+const ERROR_RESULT = 'Board not found.';
 
 // Get all Boards
 router.route('/').get(async (req, res, next) => {
@@ -35,7 +38,7 @@ router.route('/:boardId').get(async (req, res, next) => {
     const board = await boardsService.getById(boardId);
 
     if (!board) {
-      return next({ statusCode: 404, result: 'Board not found.' });
+      return next(new Error404(ERROR_RESULT));
     }
 
     res.status(200).json(board.toResponse());
@@ -50,15 +53,13 @@ router.route('/:boardId').put(async (req, res, next) => {
     const { title, columns } = req.body;
     const { boardId } = req.params;
 
-    console.log('----------', columns);
-
     const updateRes = await boardsService.updateBoard(boardId, {
       title,
       columns
     });
 
     if (!updateRes.n) {
-      return next({ statusCode: 404, result: 'Board not found.' });
+      return next(new Error404(ERROR_RESULT));
     }
 
     res.status(200).json({ id: boardId, title, columns });
@@ -72,11 +73,12 @@ router.route('/:boardId').delete(async (req, res, next) => {
   try {
     const { boardId } = req.params;
 
-    const removeRes = await boardsService.removeBoard(boardId);
+    const deletedCount = await boardsService.removeBoard(boardId);
 
-    if (!removeRes.deletedCount) {
-      return next({ statusCode: 404, result: 'Board not found.' });
+    if (!deletedCount) {
+      return next(new Error404(ERROR_RESULT));
     }
+
     res.status(204).json(boardId);
   } catch (err) {
     return next(err);
