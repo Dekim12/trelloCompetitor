@@ -1,60 +1,27 @@
 const Task = require('./task.model');
-const db = require('../../db');
 
-const selectBoardTasks = (boardId, tasks) => tasks[boardId] || {};
+const getAll = async boardId => Task.find({ boardId });
 
-const getAll = boardId => {
-  return Object.values(selectBoardTasks(boardId, db.tasks));
+const createTask = async (boardId, task) => Task.create({ ...task, boardId });
+
+const getById = async (_id, boardId) => Task.findOne({ _id, boardId });
+
+const updateTask = async (_id, boardId, task) =>
+  Task.updateOne({ _id, boardId }, task);
+
+const removeTask = async (_id, boardId) => Task.remove({ _id, boardId });
+
+const removeBoardTasks = async boardId => Task.remove({ boardId });
+
+const resetUserIds = async userId =>
+  Task.updateMany({ userId }, { userId: null });
+
+module.exports = {
+  getAll,
+  createTask,
+  getById,
+  updateTask,
+  removeTask,
+  removeBoardTasks,
+  resetUserIds
 };
-
-const createTask = (boardId, task) => {
-  let boardTasks = db.tasks[boardId];
-
-  if (!boardTasks) {
-    db.tasks[boardId] = {};
-    boardTasks = db.tasks[boardId];
-  }
-
-  Object.values(boardTasks).find(item => item.title === task.title);
-
-  const newTask = new Task({ ...task, boardId });
-  boardTasks[newTask.id] = newTask;
-
-  return newTask;
-};
-
-const getById = (boardId, taskId) => {
-  const boardTasks = db.tasks[boardId] || {};
-  const targetTask = boardTasks[taskId];
-
-  if (!targetTask) {
-    return null;
-  }
-
-  return targetTask;
-};
-
-const updateTask = (boardId, taskId, task) => {
-  const boardTasks = db.tasks[boardId] || {};
-  const targetTask = boardTasks[taskId];
-
-  const updatedTask = new Task({ ...targetTask, ...task });
-  db.tasks[boardId] = { ...db.tasks[boardId], [taskId]: updatedTask };
-
-  return updatedTask;
-};
-
-const removeTask = (boardId, taskId) => {
-  const boardTasks = db.tasks[boardId] || {};
-  const { [taskId]: targetTask, ...tasks } = boardTasks;
-
-  if (!targetTask) {
-    return null;
-  }
-
-  db.tasks[boardId] = tasks;
-
-  return targetTask;
-};
-
-module.exports = { getAll, createTask, getById, updateTask, removeTask };

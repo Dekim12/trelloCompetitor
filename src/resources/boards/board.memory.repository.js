@@ -1,47 +1,32 @@
 const Board = require('./board.model');
-const db = require('../../db');
+const { removeBoardTasks } = require('../tasks/task.memory.repository');
 
-const getAll = () => Object.values(db.boards);
+const getAll = async () => Board.find();
 
-const createBoard = board => {
-  Object.values(db.boards).find(item => item.title === board.title);
+const createBoard = async board => Board.create(board);
 
-  const newBoard = new Board(board);
-  db.boards[newBoard.id] = newBoard;
+const getById = async boardId => Board.findById(boardId);
 
-  return newBoard;
+const updateBoard = async (_id, { title, columns }) => {
+  const transformedColumns = columns.map(
+    ({ id, title: columnTitle, order }) => ({
+      _id: id,
+      title: columnTitle,
+      order
+    })
+  );
+
+  return Board.updateOne({ _id }, { title, columns: transformedColumns });
 };
 
-const getById = boardId => {
-  const board = db.boards[boardId];
+const removeBoard = async _id => {
+  const { deletedCount } = await Board.remove({ _id });
 
-  if (!board) {
-    return null;
+  if (deletedCount) {
+    await removeBoardTasks(_id);
   }
 
-  return board;
-};
-
-const updateBoard = (id, board) => {
-  const targetBoard = db.boards[id];
-
-  const updatedBoard = new Board({ ...targetBoard, ...board });
-  db.boards = { ...db.boards, [id]: updatedBoard };
-
-  return updatedBoard;
-};
-
-const removeBoard = id => {
-  const { [id]: targetBoard, ...boards } = db.boards;
-
-  if (!targetBoard) {
-    return null;
-  }
-
-  db.boards = boards;
-  delete db.tasks[id];
-
-  return targetBoard;
+  return deletedCount;
 };
 
 module.exports = { getAll, createBoard, getById, updateBoard, removeBoard };
