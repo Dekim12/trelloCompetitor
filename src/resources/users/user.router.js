@@ -1,6 +1,8 @@
 const router = require('express').Router();
+
 const usersService = require('./user.service');
 const { Error404 } = require('../../common/errors');
+const { hashPassword } = require('../../common/authUtils');
 
 const ERROR_RESULT = 'User not found.';
 
@@ -20,7 +22,10 @@ router.route('/').get(async (req, res, next) => {
 // Create User
 router.route('/').post(async (req, res, next) => {
   try {
-    const user = await usersService.createUser(req.body);
+    const { name, login, password } = req.body;
+
+    const hash = await hashPassword(password);
+    const user = await usersService.createUser({ name, login, password: hash });
 
     res.status(200).json(user.toResponse());
   } catch (err) {
