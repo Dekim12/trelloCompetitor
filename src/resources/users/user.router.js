@@ -1,4 +1,5 @@
 const router = require('express').Router();
+
 const usersService = require('./user.service');
 const { Error404 } = require('../../common/errors');
 

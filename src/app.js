@@ -5,6 +5,8 @@ const YAML = require('yamljs');
 const cors = require('cors');
 
 const logger = require('./common/logger');
+const { authMiddleware } = require('./common/authUtils');
+const loginRouter = require('./resources/auth/auth.router');
 const userRouter = require('./resources/users/user.router');
 const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
@@ -19,14 +21,18 @@ logger.enableLogger(app);
 
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
+app.use(authMiddleware);
+
 app.use('/', (req, res, next) => {
   if (req.originalUrl === '/') {
     res.send('Service is running!');
     return;
   }
+
   next();
 });
 
+app.use('/login', loginRouter);
 app.use('/users', userRouter);
 app.use('/boards', boardRouter);
 boardRouter.use('/:boardId/tasks', taskRouter);
