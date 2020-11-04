@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { hashPassword } = require('../../common/authUtils');
+
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -24,7 +26,16 @@ function toResponse() {
   return { id, name, login };
 }
 
+async function hashUserPassword(next) {
+  const hash = await hashPassword(this.password);
+
+  this.password = hash;
+
+  next();
+}
+
 UserSchema.methods.toResponse = toResponse;
+UserSchema.pre('save', hashUserPassword);
 
 const User = mongoose.model('User', UserSchema);
 

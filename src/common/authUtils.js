@@ -4,7 +4,8 @@ const { genSalt, hash, compare } = require('bcrypt');
 const { JWT_SECRET_KEY } = require('./config');
 const { Error401 } = require('./errors');
 
-const saltRounds = 10;
+const SALT_ROUNDS = 10;
+const OPEN_URLS = ['/', '/login'];
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -13,7 +14,7 @@ const authMiddleware = async (req, res, next) => {
       headers: { authorization }
     } = req;
 
-    if (originalUrl === '/' || originalUrl === '/login') {
+    if (OPEN_URLS.includes(originalUrl)) {
       return next();
     }
 
@@ -32,7 +33,7 @@ const authMiddleware = async (req, res, next) => {
 };
 
 const hashPassword = async password => {
-  const salt = await genSalt(saltRounds);
+  const salt = await genSalt(SALT_ROUNDS);
 
   return hash(password, salt);
 };
@@ -40,7 +41,7 @@ const hashPassword = async password => {
 const comparePasswords = async (password, hashedPassword) =>
   compare(password, hashedPassword);
 
-const generateJWT = user => jwt.sign(user, JWT_SECRET_KEY, { expiresIn: '1h' });
+const generateJWT = user => jwt.sign(user, JWT_SECRET_KEY, { expiresIn: '2h' });
 
 const verifyJWT = token => jwt.verify(token, JWT_SECRET_KEY);
 

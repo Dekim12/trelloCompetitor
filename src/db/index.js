@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const { MONGO_CONNECTION_STRING } = require('../common/config');
-const { hashPassword } = require('../common/authUtils');
 const {
   createUser,
   getByLogin
@@ -20,12 +19,10 @@ const connectToDb = cb => {
     const user = await getByLogin('admin');
 
     if (!user) {
-      const password = await hashPassword('admin');
-
       await createUser({
         name: 'admin',
         login: 'admin',
-        password
+        password: 'admin'
       });
     }
 
